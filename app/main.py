@@ -15,7 +15,7 @@ config.validate()
 db.init_db()
 
 BASE = Path(__file__).parent
-app = FastAPI(title="Weekly Sitrep")
+app = FastAPI(title="Sitrep")
 app.mount("/static", StaticFiles(directory=BASE / "static"), name="static")
 app.include_router(auth.router)
 

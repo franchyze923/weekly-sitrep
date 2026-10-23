@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>{% block title %}Weekly Sitrep{% endblock %}</title>
+  <title>{% block title %}Sitrep{% endblock %}</title>
   <link rel="icon" href="/static/favicon.svg" type="image/svg+xml">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -32,7 +32,10 @@
     a { color:var(--accent); }
 
     header { position:sticky; top:0; z-index:10; display:grid; grid-template-columns:1fr auto 1fr; align-items:center; gap:10px; padding:10px 20px; background:color-mix(in srgb, var(--panel) 85%, transparent); backdrop-filter:blur(10px); border-bottom:1px solid var(--line); }
-    header .brand { font-weight:700; font-size:16px; letter-spacing:-.01em; color:var(--text); text-decoration:none; white-space:nowrap; justify-self:center; }
+    header .brand { display:inline-flex; align-items:center; gap:9px; text-decoration:none; white-space:nowrap; justify-self:center; color:var(--text); }
+    header .brand .mark { width:22px; height:22px; border-radius:6px; box-shadow:0 1px 2px rgba(0,0,0,.12); }
+    header .brand span { font-weight:500; font-size:15px; letter-spacing:.18em; text-transform:uppercase; }
+    header .brand span b { font-weight:800; color:var(--accent); }
     header .left { display:flex; align-items:center; gap:10px; justify-self:start; }
     header .arrow { font-size:20px; line-height:1; text-decoration:none; color:var(--text); width:34px; height:34px; display:grid; place-items:center; border-radius:10px; transition:background .15s; }
     header .arrow:hover { background:var(--line); }
@@ -150,7 +153,10 @@
 <body>
 <header>
   <div class="left">{% block header %}{% endblock %}</div>
-  <a class="brand" href="/">Weekly Sitrep</a>
+  <a class="brand" href="/" aria-label="Sitrep home">
+    <svg class="mark" viewBox="0 0 32 32" aria-hidden="true"><rect width="32" height="32" rx="7" fill="var(--accent)"/><path d="M9 11h14M9 16h14M9 21h9" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>
+    <span>SIT<b>REP</b></span>
+  </a>
   <nav>
     <a href="/">This week</a>
     <a href="/projects">Projects</a>
@@ -164,7 +170,7 @@
 <main>
 {% block content %}{% endblock %}
 </main>
-<footer>Weekly Sitrep v{{ app_version }}{% if app_build %} · {{ app_build }}{% endif %}</footer>
+<footer>Sitrep v{{ app_version }}{% if app_build %} · {{ app_build }}{% endif %}</footer>
 <script>
   document.getElementById('theme-toggle').addEventListener('click', () => {
     const root = document.documentElement;
@@ -193,7 +199,7 @@
         const name = card.dataset.project, sum = card.querySelector('.summary');
         return name + '\n' + (sum ? sum.textContent.trim() : '(no report this week)');
       });
-      copyText('Weekly Sitrep — ' + all.dataset.week + '\n\n' + parts.join('\n\n'), all);
+      copyText('Sitrep — ' + all.dataset.week + '\n\n' + parts.join('\n\n'), all);
     }
   });
   // Generate with an empty report: show a hint instead of sending the request.

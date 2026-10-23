@@ -1,4 +1,4 @@
-# Weekly Sitrep
+# Sitrep
 
 A small, self-hosted web app for weekly project status reports.
 
@@ -10,7 +10,7 @@ weeks. That's the whole app.
 
 ```
 ┌──────────────────────────────────────────────────────────────────────┐
-│ Weekly Sitrep        ←  Oct 19–25, 2026  current  →     This week · Projects · Fran │
+│ Sitrep        ←  Oct 19–25, 2026  current  →     This week · Projects · Fran │
 ├──────────────────────────────────────────────────────────────────────┤
 │ ████████░░░░  1 of 2 projects have reported this week                 │
 │                                                                      │

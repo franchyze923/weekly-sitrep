@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}{{ week_label(monday) }} · Weekly Sitrep{% endblock %}
+{% block title %}{{ week_label(monday) }} · Sitrep{% endblock %}
 {% block header %}{% with suffix='' %}{% include "_week_nav.html" %}{% endwith %}{% endblock %}
 {% block content %}
 {% if not rows %}
