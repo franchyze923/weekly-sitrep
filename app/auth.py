@@ -48,9 +48,17 @@ def check_password(password: str, password_hash: str) -> bool:
         return False
 
 
+def _safe_next(request: Request) -> str:
+    """Post-login destination: a local path only, never an external URL."""
+    nxt = request.session.pop("next", "/") or "/"
+    if not nxt.startswith("/") or nxt.startswith("//") or nxt.startswith("/auth/"):
+        return "/"
+    return nxt
+
+
 def _finish_login(request: Request, email: str, name: str, via: str):
     request.session["user"] = {"email": email, "name": name or email, "via": via}
-    return RedirectResponse(request.session.pop("next", "/"), status_code=303)
+    return RedirectResponse(_safe_next(request), status_code=303)
 
 
 @router.get("/login", name="login_page")

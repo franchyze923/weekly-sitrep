@@ -29,10 +29,14 @@ templates.env.globals["app_build"] = config.APP_BUILD
 @app.middleware("http")
 async def require_login(request: Request, call_next):
     path = request.url.path
-    if path.startswith("/auth/") or path.startswith("/static/") or path == "/healthz":
+    if path.startswith("/auth/") or path.startswith("/static/") or path in ("/healthz", "/favicon.ico"):
         return await call_next(request)
     if auth.current_user(request) is None:
-        request.session["next"] = str(request.url.path)
+        # Remember where to return after login, but only for real page views:
+        # a browser's favicon probe or an HTMX fragment post must not become
+        # the post-login destination.
+        if request.method == "GET" and "hx-request" not in request.headers and not path.startswith("/favicon"):
+            request.session["next"] = str(request.url.path)
         return RedirectResponse("/auth/login", status_code=303)
     return await call_next(request)
 
@@ -66,6 +70,11 @@ def project_or_404(s: Session, slug: str) -> db.Project:
     if project is None:
         raise HTTPException(404, "No such project")
     return project
+
+
+@app.get("/favicon.ico", include_in_schema=False)
+def favicon():
+    return RedirectResponse("/static/favicon.svg")
 
 
 @app.get("/healthz")
