@@ -1,0 +1,4 @@
+<a class="arrow" href="/week/{{ prev_week }}{{ suffix }}" title="Previous week">&larr;</a>
+<span class="week">{{ week_label(monday) }}</span>
+{% if is_current %}<span class="badge">current</span>{% endif %}
+{% if next_week %}<a class="arrow" href="/week/{{ next_week }}{{ suffix }}" title="Next week">&rarr;</a>{% else %}<a class="arrow disabled">&rarr;</a>{% endif %}

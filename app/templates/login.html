@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block title %}Sign in · Weekly Sitrep{% endblock %}
+{% block content %}
+<div class="login card">
+  <h1>Sign in</h1>
+  <p class="muted sub">Weekly project status reports.</p>
+  {% if error == 'bad' %}<div class="error">Wrong email or password.</div>
+  {% elif error == 'oidc' %}<div class="error">{{ oidc_name }} sign-in did not complete. Try again.</div>{% endif %}
+  {% if oidc_enabled %}
+    <a href="/auth/oidc" style="text-decoration:none"><button type="button" class="wide primary">Log in with {{ oidc_name }}</button></a>
+    <div class="or">or with a local account</div>
+  {% endif %}
+  <form method="post" action="/auth/login">
+    <label for="email">Email</label>
+    <input type="email" id="email" name="email" required autocomplete="username">
+    <label for="password">Password</label>
+    <input type="password" id="password" name="password" required autocomplete="current-password">
+    <button type="submit" class="{{ 'wide' if oidc_enabled else 'wide primary' }}">Sign in</button>
+  </form>
+</div>
+{% endblock %}

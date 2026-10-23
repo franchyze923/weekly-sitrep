@@ -1,0 +1,13 @@
+{% if report and report.summary_text %}
+  <div class="summary-wrap">
+    <div class="summary">{{ report.summary_text }}</div>
+    {% include "_copy_button.html" %}
+  </div>
+  <p class="muted">Generated {{ report.summary_updated_at|localtime }}</p>
+{% else %}
+  <p class="empty">No summary yet. Write your bullet points and click Generate executive summary.</p>
+{% endif %}
+{% if oob %}
+<span id="status-{{ project.slug }}" hx-swap-oob="true">{% include "_save_status.html" %}</span>
+{% include "_progress.html" %}
+{% endif %}

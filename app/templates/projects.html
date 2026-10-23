@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Projects · Weekly Sitrep{% endblock %}
+{% block header %}<span class="week">Projects</span>{% endblock %}
+{% block content %}
+<form class="inline" method="post" action="/projects">
+  <input type="text" name="name" placeholder="New project name" required>
+  <button type="submit" class="primary">Add</button>
+</form>
+<table>
+  <tr><th>Name</th><th>Status</th><th></th></tr>
+  {% for p in projects %}
+  <tr id="row-{{ p.slug }}">
+    <td>
+      <span class="name">{{ p.name }}</span>
+      <form class="rename" method="post" action="/projects/{{ p.slug }}/rename" hidden>
+        <input type="text" name="name" value="{{ p.name }}" required>
+        <button type="submit" class="primary">Save</button>
+        <button type="button" class="cancel">Cancel</button>
+      </form>
+    </td>
+    <td>{{ 'active' if p.active else 'archived' }}</td>
+    <td class="actions">
+      <details class="menu">
+        <summary aria-label="Actions for {{ p.name }}">
+          <svg viewBox="0 0 24 24" fill="currentColor"><circle cx="12" cy="5" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="12" cy="19" r="2"/></svg>
+        </summary>
+        <div class="menu-items">
+          <button type="button" class="menu-rename">Rename</button>
+          <form method="post" action="/projects/{{ p.slug }}/toggle"><button type="submit">{{ 'Archive' if p.active else 'Restore' }}</button></form>
+        </div>
+      </details>
+    </td>
+  </tr>
+  {% endfor %}
+</table>
+<p class="muted">Renaming keeps all past weeks attached to the project. Archived projects keep their history but no longer appear on the weekly page.</p>
+<script>
+  document.querySelectorAll('tr[id^="row-"]').forEach(row => {
+    const name = row.querySelector('.name'), form = row.querySelector('form.rename'),
+          menu = row.querySelector('details.menu');
+    row.querySelector('.menu-rename').addEventListener('click', () => {
+      menu.open = false; name.hidden = true; form.hidden = false;
+      const input = form.querySelector('input'); input.focus(); input.select();
+    });
+    form.querySelector('.cancel').addEventListener('click', () => {
+      form.hidden = true; name.hidden = false; form.querySelector('input').value = name.textContent;
+    });
+    form.addEventListener('keydown', e => { if (e.key === 'Escape') form.querySelector('.cancel').click(); });
+  });
+  // Close any open menu when clicking elsewhere.
+  document.addEventListener('click', e => {
+    document.querySelectorAll('details.menu[open]').forEach(d => { if (!d.contains(e.target)) d.open = false; });
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,1 @@
+{% if report and report.raw_text.strip() %}<span class="status ok">Updated {{ report.updated_at|localtime }} by {{ report.updated_by }}</span>{% else %}<span class="status pending">Not updated yet</span>{% endif %}

@@ -1,0 +1,108 @@
+# Example manifests matching the frans-homelab gitops pattern. Copy into
+# gitops/workloads/weekly-sitrep/ when ready to deploy. The Secret
+# weekly-sitrep-oidc (keys: SESSION_SECRET, OIDC_CLIENT_SECRET) is applied
+# out-of-band, not committed.
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: weekly-sitrep
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: weekly-sitrep-data
+  namespace: weekly-sitrep
+spec:
+  accessModes: [ReadWriteOnce]
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: weekly-sitrep
+  namespace: weekly-sitrep
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: weekly-sitrep
+  template:
+    metadata:
+      labels:
+        app: weekly-sitrep
+    spec:
+      containers:
+        - name: app
+          image: franchyze923/weekly-sitrep:latest
+          ports:
+            - containerPort: 8000
+          env:
+            - name: AUTH_MODE
+              value: "login"
+            - name: OIDC_DISCOVERY_URL
+              value: "https://keycloak.franpolignano.com/realms/homelab/.well-known/openid-configuration"
+            - name: OIDC_CLIENT_ID
+              value: "weekly-sitrep"
+            - name: OIDC_CLIENT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: weekly-sitrep-oidc
+                  key: OIDC_CLIENT_SECRET
+            - name: SESSION_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: weekly-sitrep-oidc
+                  key: SESSION_SECRET
+            - name: APP_TZ
+              value: "America/New_York"
+            - name: SEED_PROJECTS
+              value: "Project A,Project B"
+          volumeMounts:
+            - name: data
+              mountPath: /data
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 8000
+          resources:
+            requests:
+              cpu: 20m
+              memory: 64Mi
+            limits:
+              memory: 256Mi
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: weekly-sitrep-data
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: weekly-sitrep
+  namespace: weekly-sitrep
+spec:
+  selector:
+    app: weekly-sitrep
+  ports:
+    - port: 80
+      targetPort: 8000
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: weekly-sitrep
+  namespace: weekly-sitrep
+spec:
+  parentRefs:
+    - name: main-gateway
+      namespace: gateway-system
+  hostnames:
+    - sitrep.franpolignano.com
+  rules:
+    - backendRefs:
+        - name: weekly-sitrep
+          port: 80

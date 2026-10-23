@@ -1,0 +1,4 @@
+<div class="progress" id="progress"{% if oob %} hx-swap-oob="true"{% endif %}>
+  <div class="bar"><span style="width:{{ (100 * updated / total) if total else 0 }}%"></span></div>
+  <span>{{ updated }} of {{ total }} projects have reported this week</span>
+</div>
