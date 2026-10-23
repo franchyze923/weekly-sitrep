@@ -86,6 +86,9 @@
     textarea:focus { outline:none; border-color:var(--accent); box-shadow:0 0 0 3px var(--accent-soft); }
 
     .toolbar { display:flex; align-items:center; justify-content:flex-end; gap:12px; margin-top:10px; }
+    .hint { font-size:13px; color:var(--pending-text); background:var(--pending-soft); border-radius:999px; padding:4px 12px; animation:fadein .15s ease; }
+    @keyframes fadein { from { opacity:0; transform:translateX(4px); } to { opacity:1; transform:none; } }
+    textarea.needs-input { border-color:var(--pending); box-shadow:0 0 0 3px var(--pending-soft); }
     button { font:inherit; font-weight:500; font-size:13px; padding:6px 14px; border-radius:999px; border:1px solid var(--line); background:var(--panel); color:var(--text); cursor:pointer; display:inline-flex; align-items:center; gap:7px; transition:background .15s, border-color .15s, color .15s, transform .05s; }
     button:hover { border-color:var(--accent); color:var(--accent); background:var(--accent-soft); }
     button:active { transform:translateY(1px); }
@@ -192,6 +195,18 @@
       });
       copyText('Weekly Sitrep — ' + all.dataset.week + '\n\n' + parts.join('\n\n'), all);
     }
+  });
+  // Generate with an empty report: show a hint instead of sending the request.
+  document.addEventListener('htmx:confirm', e => {
+    const btn = e.detail.elt;
+    if (!btn.matches || !btn.matches('button[hx-post$="/generate"]')) return;
+    const form = btn.closest('form'), ta = form.querySelector('textarea'), hint = form.querySelector('.hint');
+    if (ta.value.trim()) return;
+    e.preventDefault();
+    hint.hidden = false; ta.classList.add('needs-input'); ta.focus();
+    clearTimeout(hint._t);
+    hint._t = setTimeout(() => { hint.hidden = true; ta.classList.remove('needs-input'); }, 2500);
+    ta.addEventListener('input', () => { hint.hidden = true; ta.classList.remove('needs-input'); }, { once: true });
   });
   // Auto-grow textareas to fit their content.
   function grow(el) { el.style.height = 'auto'; el.style.height = (el.scrollHeight + 2) + 'px'; }

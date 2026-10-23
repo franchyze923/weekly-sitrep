@@ -33,6 +33,7 @@
             hx-trigger="keyup changed delay:1500ms"
             hx-target="#status-{{ project.slug }}" hx-swap="innerHTML">{{ report.raw_text if report else '' }}</textarea>
           <div class="toolbar">
+            <span class="hint" hidden>Add a few bullet points first</span>
             <button type="button"
               hx-post="/week/{{ monday.isoformat() }}/{{ project.slug }}/generate"
               hx-include="#form-{{ project.slug }}" hx-target="#summary-{{ project.slug }}" hx-swap="innerHTML"
