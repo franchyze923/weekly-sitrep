@@ -48,8 +48,10 @@ weeks. That's the whole app.
 
 ## Quick start (local)
 
+Needs Python 3.11 or newer (the container uses 3.12).
+
 ```sh
-git clone <this repo> && cd weekly-sitrep
+git clone https://github.com/franchyze923/weekly-sitrep.git && cd weekly-sitrep
 python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 ./run-dev.sh
 ```
@@ -146,7 +148,9 @@ the save/generate routes.
 .venv/bin/python -m pytest -q tests
 ```
 
-The suite spins up the app against a throwaway SQLite file per test and
+Dependencies are pinned in `requirements.txt`; `pip-audit -r requirements.txt`
+checks them against known advisories, and Dependabot opens a weekly PR for
+updates. The suite spins up the app against a throwaway SQLite file per test and
 covers week navigation and rollover (current/past/future, Monday snapping,
 new week starts blank, weeks and projects isolated from each other), save
 and generate fragments, archive and rename keeping history, the login flow,
